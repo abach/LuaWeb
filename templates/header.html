@@ -4,23 +4,21 @@
     <meta charset="utf-8">
     <title>{{title}}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Tor Hveem's blog">
-    <meta name="author" content="Tor Hveem">
+    <meta name="description" content="Static pages">
+    <meta name="author" content="Andreas Bach">
+    <meta http-equiv="content-type" content="text/html; charset=no_NB.UTF-8">
 
     <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/static/fa/css/font-awesome.min.css" rel="stylesheet">
     <link href="/feed/" type="application/atom+xml" rel="alternate" title="Blog Atom Feed">
     <link rel="stylesheet" href="/static/hl/default.min.css">
     <style>
-    @import url(//fonts.googleapis.com/css?family=Open+Sans:300,400,400italic,600,600italic);
+	@import url(//fonts.googleapis.com/css?family=Cardo:400,400italic,700);
 
     body {
       padding-bottom: 40px;
       color: #222;
-      /*font-family: 'Open Sans', 'Georgia', sans-serif;*/
-      font: 15px/22px 'Open Sans',Arial,Helvetica,sans-serif;
-      background-color: #fdfdfd;
-    /*  background-image: url(static/dust.png); */
+      font: 19px/26px 'Cardo', serif;
+      background-color: #fefefe;
     }
     .drop-shadow {
         position:relative;
@@ -63,23 +61,6 @@
              -o-transform:rotate(3deg);
                 transform:rotate(3deg);
     }
-    svg {
-      width: auto\9;
-      height: auto;
-      max-width: 100%;
-      vertical-align: middle;
-      border: 0;
-      -ms-interpolation-mode: bicubic;
-    }
-    .logo img, .logo svg {
-        max-height: 200px;
-        max-width: 100%;
-        vertical-align: middle;
-        text-align: left;
-    }
-    .logo svg path {
-        fill: #2779d3;
-    }
     .date {
         text-transform: uppercase;
         font-size: smaller;
@@ -104,28 +85,26 @@
         color: #abad6a;
     }
     a, .blue {
-        color: #2779d3;
+        color: #d71903;
+    }
+    a:hover {
+        color: #600;
     }
     .gray {
         color: #333;
     }
-    .bear {
-        font-size: 96px;
-    }
-    #sidebar {
-        /*background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAAAAAA6mKC9AAAAAnRSTlMA/1uRIrUAAAAeSURBVBjTY/iPBhj+/z/3HxkzYKhAlf+PRcXQNQMAcMz44fe3nNQAAAAASUVORK5CYII=);*/
-        position: fixed;
-        width: 12%;
+    #header {
+        position: relative;
+        width: 100%;
         padding-left: 2%;
         margin-left: 0;
         z-index: 1;
-        min-height: 100%;
-        min-width: 120px;
+        min-height: 100px;
         padding: 30px;
-        background-color: #fafafa;
+        background-color: #fdfdfd;
         box-shadow: 3px 3px color:#eee inset;
     }
-    #sidebar .about {
+    #header .about {
       position: fixed;
       bottom: 0px;
       max-width: 12%;
@@ -144,6 +123,7 @@
     aside.info li {
         margin-bottom: 18px;
         width: 100%;
+        white-space: nowrap;
     }
     aside.info li a {
         color: #222;
@@ -167,32 +147,50 @@
     }
 
     aside.info li a:hover {
-        color: #2779d3;
-        border: 2px solid #2779d3;
+        color: #d22;
+        border: 2px solid #d22;
         text-decoration: none;
         font-weight: bold;
     }
     .content {
-        width: auto;
+        width: 100%;
         position: relative;
-        margin-left: 18%;
+        margin-left: 10%;
+		margin-right: 10%;
         padding: 30px;
     }
     .carousel {
-        position: relative;
         width: 100%;
+        position: relative;
+        margin-left: 16%;
+        padding: 0;
         border-top: 1px solid #e2e2e2;
         border-left: 1px solid #e2e2e2;
         border-right: 1px solid #e2e2e2;
     }
-    .content p, .content blockquote, .content pre, .content h1 {
+    .content p, .content blockquote, .content pre, .content h1, .content h2 {
         max-width: 968px;
+        font-size: 18px;
+        line-height: 24px;
+        font-weight: 300;
+        word-break: break-word;
+-webkit-hyphens: auto;
+   -moz-hyphens: auto;
+    -ms-hyphens: auto;
+        hyphens: auto;
     }
     .content h1 {
-        margin-bottom: 15px;
+        font-size: 40px;
+    }
+    .content h1, .content h2 {
+        margin-bottom: 36px;
+        font-size: 36px;
+        line-height: 1;
     }
     pre {
-        padding: 0
+        padding: 0;
+        background: #282828;
+		color: #2fde23;
     }
     .blog-post-list a {
         text-transform: capitalize;
@@ -211,15 +209,22 @@
         margin-bottom: 15px;
         width: 31%;
     }
+	.boxen {
+		float: none;
+		display: inline-block;
+		clear: none;
+		width: auto;
+		margin: 0;
+	}
     @media (max-width: 968px) {
-        #sidebar, .content {
+        #header, .content {
             position: relative;
             min-height: 0;
             margin-left: 0;
             max-width: 100%;
             border: 0;
         }
-        #sidebar {
+        #header {
             width: 100%;
             text-align: center;
         }
@@ -252,25 +257,19 @@
   </head>
 
   <body class="">
-    <header id="sidebar">
+    <header id="header">
 
-      <aside class="logo">
+        <span style="text-align: center; display: block; margin-left: auto; margin-right: auto;">
         <a href="/" title="Home">
-           <img class="" src="/static/ibear.svg">
+           <img style="align: center" src="/static/horse.png">
         </a>
-      </aside>
-      <aside class="info">
-          <h3><a class="brand" title="That's me" href="/">Tor Hveem</a></h3>
-          <p class="muted" title="He said - jokingly">Letters from a stratosphere adventurer</p>
-          <ul class="unstyled">
-              <li><a href='&#109;ail&#116;o&#58;&#116;&#111;r&#64;h%76&#101;%&#54;5m%2&#69;no'><i class="icon-envelope-alt"></i>t&#111;r&#64;&#104;&#118;&#101;em&#46;&#110;o</a></li>
-              <li><a href="https://twitter.com/thveem"><i class="icon-twitter"></i>thveem</a></li>
-              <li><a href="https://github.com/torhve"><i class="icon-github"></i>github</a></li>
-          </ul>
-      </aside>
-      <aside class="about">
-          <p>Lua&amp;Nginx <a href="/simple-blogging-with-lua-and-git">powered</a></p>
-          <p class=""><span class="badge">{{ counter }}</span> page visits</p>
-      </aside>
+          <h3><a class="brand" title="" href="/">Andreas Bach</a></h3>
+          <p class="muted" title="">Quidquid Latine dictum sit altum videtur.</p>
+		  <p>
+              <a href='&#097;&#110;&#100;&#114;&#101;&#097;&#115;&#064;&#098;&#097;&#099;&#104;&#046;&#108;&#105;'><i class="icon-envelope-alt"></i>&#097;&#110;&#100;&#114;&#101;&#097;&#115;&#064;&#098;&#097;&#099;&#104;&#046;&#108;&#105;</a>
+              <a href="https://twitter.com/bacharazzi"><i class="icon-twitter"></i>bacharazzi</a>
+              <a href="https://github.com/abach"><i class="icon-github"></i>github</a>
+          </p>
+	  </span>
     </header>
 

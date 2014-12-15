@@ -9,16 +9,17 @@ local atom = require "atom"
 -- We need os for date formatting
 local os = require "os"
 
+
 -- Set the content type
 ngx.header.content_type = 'text/html';
 
 -- use nginx $root variable for template dir, needs trailing slash
-TEMPLATEDIR = ngx.var.root .. 'lua/';
+TEMPLATEDIR = ngx.var.root .. 'templates/';
 -- The git repository storing the markdown files. Needs trailing slash
 BLAGDIR = TEMPLATEDIR .. 'md/'
-BLAGTITLE = 'hveem.no'
-BLAGURL = 'http://hveem.no/'
-BLAGAUTHOR = 'Tor Hveem'
+BLAGTITLE = 'bach.priv.no'
+BLAGURL = 'http://www.bach.priv.no/'
+BLAGAUTHOR = 'Andreas Bach'
 
 -- the db global
 red = nil
@@ -95,19 +96,59 @@ local function index()
     ngx.print( page(context) )
 end
 
+local function page(match)
+	assert(os.setlocale('nb_NO.UTF-8'))
+
+	page = match[1]
+
+	date = os.date('%d %B %Y')
+    local counter, err = red:incr(page..":visit")
+	if err then 
+		red:set('prod'..page.."1")
+	end
+	local mdcontent
+	local mdfile =  BLAGDIR .. page .. '.md'
+	local command = "stat -c %Z "..mdfile
+	local f = assert(io.popen(command, 'r'))
+	local s = assert(f:read('*a'))
+	f:close()
+	local filetime = s
+	local mdfilefp = io.open(mdfile, 'r')
+	if mdfilefp then
+		mdcontent = mdfilefp:read('*a')
+	else
+		return 404
+	end
+	if filetime then
+		date = os.date('%d %B %Y', filetime)
+	end
+	mdhtml = markdown(mdcontent)
+	mdfilefp:close()
+
+    local ctx = {
+        created = date,
+        content = mdhtml,
+        title = filename2title(page),
+        posts = posts,
+        counter = counter,
+    } 
+    local template = tirtemplate.tload('page.html')
+    ngx.print( template(ctx) )
+end
+
 -- helper function to return blog content given a title
 local function blogcontent(page)
     -- Check if the page is in redis cache
     -- check if the page cache needs updating
     local post, err = red:get('post:'..page..':log')
     if err or post == ngx.null then
-        ngx.say('Error fetching post from database')
+        ngx.say('Error fetching post from database:'..page)
         return 500
     end
     local postlog = cjson.decode(post)
     local lastupdate = 0
     for ref, attrs in pairs(postlog) do
-        local logdate = attrs.timestamp
+        local logdate = tonumber(attrs.timestamp)
         if logdate > lastupdate then
             lastupdate = logdate
         end
@@ -123,7 +164,12 @@ local function blogcontent(page)
     if lastupdate <= lastgenerated then nocache = false end
     local mdhtml = '' 
     if nocache then
-        local mdfile =  BLAGDIR .. page .. '.md'
+		local filename, err = red:get('post:'..page..':filename')
+		if err or filename == ngx.null then
+			ngx.say('Error getting filename of post')
+			return 500
+		end
+        local mdfile =  BLAGDIR .. filename
         local mdfilefp = assert(io.open(mdfile, 'r'))
         local mdcontent = mdfilefp:read('*a')
         mdhtml = markdown(mdcontent) 
@@ -175,6 +221,8 @@ end
 -- blog view for a single post
 --
 local function blog(match)
+
+    -- Creating a date for show
     local page = match[1] 
     -- Checkf the requests page exists as a key in the sorted set
     local date, err = red:zscore('posts', page)
@@ -192,7 +240,7 @@ local function blog(match)
     local ctx = {
         created = blogdate(date),
         content = mdhtml,
-        title = filename2title(page),
+        title = page,
         posts = posts,
         counter = counter,
     } 
@@ -228,17 +276,21 @@ end
 
 -- mapping patterns to views
 local routes = {
-    ['$']         = index,
-    ['about$']    = about,
-    ['feed/$']     = feed,
-    ['(.*)$']     = blog,
+    ['$']         	= index,
+    ['about$']    	= about,
+    ['feed/$']    	= feed,
+    ['(.*)$']     	= blog,
+    ['prod/(.*)$']  	= page,
 }
 
-local BASE = '/'
+
+-- Set the content type
+ngx.header.content_type = 'text/html';
+
 -- iterate route patterns and find view
 for pattern, view in pairs(routes) do
     local uri = '^' .. BASE .. pattern
-    local match = ngx.re.match(ngx.var.uri, uri, "") -- regex mather in compile mode
+    local match = ngx.re.match(ngx.var.uri, uri, "oj") -- regex mather in compile mode
     if match then
         init_db()
         exit = view(match) or ngx.HTTP_OK

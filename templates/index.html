@@ -1,0 +1,16 @@
+    {( "header.html" )}
+    <hr class="featurette-divider">
+    <div class="content">
+        <h2>The blag</h1>
+        <ul class="blog-post-list unstyled">
+            {% for date, title in itersort(posts) do %}
+			<li><h5><a href="/{{slugify(title)}}">{{filename2title(title)}}</a><small> {{ blogdate(date) }}</a>
+            {% end %}
+        </ul>
+    </div>
+    <hr class="featurette-divider">
+    <br>
+    <br>
+    
+    {( "footer.html" )}
+
