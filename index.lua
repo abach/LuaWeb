@@ -78,6 +78,7 @@ end
 -- Index view
 --
 local function index()
+	assert(os.setlocale('en_US.UTF-8'))
     
     -- increment index counter
     local counter, err = red:incr("index_visist_counter")
@@ -286,6 +287,8 @@ local routes = {
 
 -- Set the content type
 ngx.header.content_type = 'text/html';
+
+local BASE = '/'
 
 -- iterate route patterns and find view
 for pattern, view in pairs(routes) do
